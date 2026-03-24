@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Settings — TransportPro</title>
+<link rel="stylesheet" href="../css/app.css"/>
+<style>
+.settings-wrap{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+.settings-nav{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:8px;position:sticky;top:76px;transition:background .25s,border-color .25s}
+.snav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r-md);font-size:13px;color:var(--text2);cursor:pointer;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.snav-item:hover{background:var(--bg3);color:var(--text)}
+.snav-item.active{background:var(--accent-soft);color:var(--accent-text)}
+.snav-item svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+.settings-section{display:none}
+.settings-section.active{display:block}
+.item-list{display:flex;flex-direction:column;gap:10px}
+.item-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;transition:border-color .15s}
+.item-row:hover{border-color:var(--border2)}
+.item-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;font-family:'Playfair Display',serif}
+.icon-blue{background:var(--info-bg);color:var(--info-text)}
+.icon-orange{background:var(--accent-soft);color:var(--accent-text)}
+.icon-green{background:var(--success-bg);color:var(--success-text)}
+.item-info{flex:1;min-width:0}
+.item-info h4{font-size:13.5px;font-weight:500;color:var(--text)}
+.item-info p{font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.ns-table{width:100%;border-collapse:collapse;font-size:13px}
+.ns-table th{padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);background:var(--bg3)}
+.ns-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+.ns-table tr:last-child td{border-bottom:none}
+.ns-table input,.ns-table select{font-size:13px}
+.ns-table input[type=text]{width:80px}
+.ns-table input[type=number]{width:80px}
+.ns-table select{width:72px}
+.preview-no{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--accent-text);letter-spacing:.5px;white-space:nowrap}
+.save-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);margin-top:16px}
+.save-bar-msg{flex:1;font-size:12.5px;color:var(--text3)}
+.theme-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:460px;margin-top:4px}
+.theme-card{border:2px solid var(--border);border-radius:var(--r-lg);padding:16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px}
+.theme-card:hover{border-color:var(--border2)}
+.theme-card.selected{border-color:var(--accent);background:var(--accent-soft)}
+.theme-preview{width:48px;height:36px;border-radius:6px;flex-shrink:0;border:1px solid var(--border)}
+.preview-light{background:linear-gradient(135deg,#F5F2ED 50%,#FFFFFF 50%)}
+.preview-dark{background:linear-gradient(135deg,#111009 50%,#1C1A15 50%)}
+.theme-card-info h4{font-size:13px;font-weight:500;color:var(--text)}
+.theme-card-info p{font-size:11.5px;color:var(--text3);margin-top:2px}
+</style>
+</head>
+<body>
+<div id="sidebar"></div>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Settings</h1>
+      <span class="badge badge-orange" id="tb-fy"></span>
+    </div>
+    <div class="topbar-right">
+      <span id="tb-user" style="font-size:13px;color:var(--text2)"></span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="settings-wrap">
+
+      <!-- LEFT NAV -->
+      <nav class="settings-nav">
+        <button class="snav-item active" onclick="showSection('company',this)">
+          <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+          Company
+        </button>
+        <button class="snav-item" onclick="showSection('branches',this)">
+          <svg viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Branches
+        </button>
+        <button class="snav-item" onclick="showSection('users',this)">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          Users
+        </button>
+        <button class="snav-item" onclick="showSection('numseries',this)">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Number Series
+        </button>
+        <button class="snav-item" onclick="showSection('fy',this)">
+          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          Financial Year
+        </button>
+        <button class="snav-item" onclick="showSection('bank',this)">
+          <svg viewBox="0 0 24 24"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
+          Bank Accounts
+        </button>
+        <button class="snav-item" onclick="showSection('theme',this)">
+          <svg viewBox="0 0 24 24"><path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.728 12.728.707.707M1 12h1m20 0h1M4.22 19.78l.707-.707M18.95 5.05l.707-.707M12 7a5 5 0 100 10A5 5 0 0012 7z"/></svg>
+          Theme
+        </button>
+      </nav>
+
+      <!-- RIGHT -->
+      <div>
+
+        <!-- COMPANY -->
+        <div class="settings-section active" id="section-company">
+          <div class="form-card">
+            <div class="form-card-title">Company Information</div>
+            <div class="g2 mb16">
+              <div class="field"><label>Company Full Name <span class="req">*</span></label><input type="text" id="co-name" placeholder="Supreme Roadways & Parcel Alliance"/></div>
+              <div class="field"><label>Short Name <span class="req">*</span></label><input type="text" id="co-short" placeholder="SRPA" maxlength="6"/></div>
+            </div>
+            <div class="g1 mb16">
+              <div class="field"><label>Address</label><input type="text" id="co-address" placeholder="Office address"/></div>
+            </div>
+            <div class="g3 mb16">
+              <div class="field"><label>City</label><input type="text" id="co-city" placeholder="Bangalore"/></div>
+              <div class="field"><label>State</label><select id="co-state"><option value="">Select state...</option></select></div>
+              <div class="field"><label>Pincode</label><input type="text" id="co-pin" placeholder="560027" maxlength="6"/></div>
+            </div>
+            <div class="g3 mb16">
+              <div class="field"><label>Phone</label><input type="tel" id="co-phone" placeholder="8495000067"/></div>
+              <div class="field"><label>Email</label><input type="email" id="co-email" placeholder="info@srpa.com"/></div>
+              <div class="field"><label>Website</label><input type="text" id="co-web" placeholder="www.srpa.com"/></div>
+            </div>
+            <div class="g3">
+              <div class="field"><label>GSTIN</label><input type="text" id="co-gstin" placeholder="27AAFDGDGDG14Z" maxlength="15" style="text-transform:uppercase"/></div>
+              <div class="field"><label>PAN</label><input type="text" id="co-pan" placeholder="AFDGDGDG" maxlength="10" style="text-transform:uppercase"/></div>
+              <div class="field"><label>CIN (optional)</label><input type="text" id="co-cin" placeholder="Optional"/></div>
+            </div>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title">Bank Details (printed on invoices)</div>
+            <div class="g2 mb16">
+              <div class="field"><label>Bank Name</label><input type="text" id="co-bank-name" placeholder="State Bank of India"/></div>
+              <div class="field"><label>Account Number</label><input type="text" id="co-bank-acc" placeholder="Account number"/></div>
+            </div>
+            <div class="g2">
+              <div class="field"><label>IFSC Code</label><input type="text" id="co-bank-ifsc" placeholder="SBIN0001234" style="text-transform:uppercase"/></div>
+              <div class="field"><label>Branch Name</label><input type="text" id="co-bank-branch" placeholder="Lalbagh Road Branch"/></div>
+            </div>
+          </div>
+          <div class="save-bar">
+            <span class="save-bar-msg" id="co-msg"></span>
+            <button class="btn btn-secondary" onclick="loadCompany()">Reset</button>
+            <button class="btn btn-primary" onclick="saveCompany()" id="co-save-btn">
+              <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+              Save Company
+            </button>
+          </div>
+        </div>
+
+        <!-- BRANCHES -->
+        <div class="settings-section" id="section-branches">
+          <div class="section-header">
+            <span class="section-title">Branches</span>
+            <button class="btn btn-primary btn-sm" onclick="openBranchModal()">
+              <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Branch
+            </button>
+          </div>
+          <div class="item-list" id="branch-list"><div class="empty-state">Loading...</div></div>
+        </div>
+
+        <!-- USERS -->
+        <div class="settings-section" id="section-users">
+          <div class="section-header">
+            <span class="section-title">Users</span>
+            <button class="btn btn-primary btn-sm" onclick="openUserModal()">
+              <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add User
+            </button>
+          </div>
+          <div class="item-list" id="user-list"><div class="empty-state">Loading...</div></div>
+        </div>
+
+        <!-- NUMBER SERIES -->
+        <div class="settings-section" id="section-numseries">
+          <div class="section-header">
+            <span class="section-title">Number Series</span>
+            <div class="field" style="margin:0">
+              <select id="ns-branch-filter" onchange="loadNumberSeries()" style="max-width:200px">
+                <option value="">Select branch...</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-card" id="ns-content">
+            <p style="color:var(--text3);font-size:13px">Select a branch above to set up number series.</p>
+          </div>
+        </div>
+
+        <!-- FINANCIAL YEAR -->
+        <div class="settings-section" id="section-fy">
+          <div class="section-header">
+            <span class="section-title">Financial Years</span>
+            <button class="btn btn-primary btn-sm" onclick="openFYModal()">
+              <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Year
+            </button>
+          </div>
+          <div class="item-list" id="fy-list"><div class="empty-state">Loading...</div></div>
+        </div>
+
+        <!-- BANK ACCOUNTS -->
+        <div class="settings-section" id="section-bank">
+          <div class="section-header">
+            <span class="section-title">Bank Accounts</span>
+            <button class="btn btn-primary btn-sm" onclick="openBankModal()">
+              <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Account
+            </button>
+          </div>
+          <div class="item-list" id="bank-list"><div class="empty-state">Loading...</div></div>
+        </div>
+
+        <!-- THEME -->
+        <div class="settings-section" id="section-theme">
+          <div class="form-card">
+            <div class="form-card-title">Display Theme</div>
+            <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Choose how TransportPro looks. Saved on your device.</p>
+            <div class="theme-cards">
+              <div class="theme-card" id="theme-light-card" onclick="setTheme('light')">
+                <div class="theme-preview preview-light"></div>
+                <div class="theme-card-info"><h4>Light</h4><p>Clean, bright interface</p></div>
+              </div>
+              <div class="theme-card" id="theme-dark-card" onclick="setTheme('dark')">
+                <div class="theme-preview preview-dark"></div>
+                <div class="theme-card-info"><h4>Dark</h4><p>Easy on the eyes at night</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- BRANCH MODAL -->
+<div id="branch-modal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeBranchModal()">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <span class="modal-title" id="bm-title">Add Branch</span>
+      <button class="btn-close" onclick="closeBranchModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="bm-id"/>
+      <div class="g2 mb16">
+        <div class="field"><label>Branch Name <span class="req">*</span></label><input type="text" id="bm-name" placeholder="e.g. Bangalore HQ"/></div>
+        <div class="field"><label>Branch Code <span class="req">*</span></label><input type="text" id="bm-code" placeholder="BLR" maxlength="6" oninput="this.value=this.value.toUpperCase()"/></div>
+      </div>
+      <div class="g1 mb16">
+        <div class="field"><label>Address</label><input type="text" id="bm-address" placeholder="Branch address"/></div>
+      </div>
+      <div class="g3 mb16">
+        <div class="field"><label>City</label><input type="text" id="bm-city" placeholder="Bangalore"/></div>
+        <div class="field"><label>State</label><select id="bm-state"><option value="">Select...</option></select></div>
+        <div class="field"><label>Pincode</label><input type="text" id="bm-pin" placeholder="560001" maxlength="6"/></div>
+      </div>
+      <div class="g3">
+        <div class="field"><label>Phone</label><input type="tel" id="bm-phone" placeholder="9999999999"/></div>
+        <div class="field"><label>GSTIN (if separate)</label><input type="text" id="bm-gstin" placeholder="Branch GSTIN" maxlength="15" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="field"><label>Manager Name</label><input type="text" id="bm-manager" placeholder="Branch manager"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeBranchModal()">Cancel</button>
+      <button class="btn btn-primary" id="bm-save" onclick="saveBranch()">Save Branch</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div id="user-modal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeUserModal()">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <span class="modal-title">Add User</span>
+      <button class="btn-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="g2 mb16">
+        <div class="field"><label>Full Name <span class="req">*</span></label><input type="text" id="um-name" placeholder="Employee full name"/></div>
+        <div class="field"><label>Phone</label><input type="tel" id="um-phone" placeholder="9999999999" maxlength="10"/></div>
+      </div>
+      <div class="g2 mb16">
+        <div class="field"><label>Email <span class="req">*</span></label><input type="email" id="um-email" placeholder="employee@srpa.com"/></div>
+        <div class="field"><label>Password <span class="req">*</span></label><input type="password" id="um-password" placeholder="Min 8 characters"/></div>
+      </div>
+      <div class="g2 mb16">
+        <div class="field">
+          <label>Role <span class="req">*</span></label>
+          <select id="um-role" onchange="toggleBranchField()">
+            <option value="">Select role...</option>
+            <option value="super_admin">Super Admin (all branches)</option>
+            <option value="branch_manager">Branch Manager</option>
+            <option value="booking_staff">Booking Staff</option>
+            <option value="accounts_staff">Accounts Staff</option>
+            <option value="driver">Driver</option>
+          </select>
+        </div>
+        <div class="field" id="um-branch-field">
+          <label>Branch <span class="req">*</span></label>
+          <select id="um-branch"><option value="">Select branch...</option></select>
+        </div>
+      </div>
+      <div id="um-sa-note" style="display:none;background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--r-md);padding:10px 14px;font-size:12.5px;color:var(--info-text)">
+        Super Admin sees all branches and all data across the company.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+      <button class="btn btn-primary" id="um-save" onclick="saveUser()">Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- FY MODAL -->
+<div id="fy-modal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeFYModal()">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span class="modal-title">Add Financial Year</span>
+      <button class="btn-close" onclick="closeFYModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="g2 mb16">
+        <div class="field"><label>FY Label <span class="req">*</span></label><input type="text" id="fy-label" placeholder="2025-26"/></div>
+        <div class="field"><label>FY Code <span class="req">*</span></label><input type="text" id="fy-code" placeholder="2526" maxlength="4"/></div>
+      </div>
+      <div class="g2 mb16">
+        <div class="field"><label>Start Date <span class="req">*</span></label><input type="date" id="fy-start"/></div>
+        <div class="field"><label>End Date <span class="req">*</span></label><input type="date" id="fy-end"/></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer">
+        <input type="checkbox" id="fy-active" style="width:auto;margin:0"/>
+        Set as active financial year
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeFYModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFY()">Save Year</button>
+    </div>
+  </div>
+</div>
+
+<!-- BANK MODAL -->
+<div id="bank-modal" class="modal-backdrop" style="display:none" onclick="if(event.target===this)closeBankModal()">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <span class="modal-title" id="ba-title">Add Bank Account</span>
+      <button class="btn-close" onclick="closeBankModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ba-id"/>
+      <div class="g2 mb16">
+        <div class="field"><label>Account Label <span class="req">*</span></label><input type="text" id="ba-name" placeholder="e.g. SBI Current A/c"/></div>
+        <div class="field"><label>Bank Name <span class="req">*</span></label><input type="text" id="ba-bank" placeholder="State Bank of India"/></div>
+      </div>
+      <div class="g2 mb16">
+        <div class="field"><label>Account Number</label><input type="text" id="ba-acc" placeholder="Account number"/></div>
+        <div class="field"><label>IFSC Code</label><input type="text" id="ba-ifsc" placeholder="SBIN0001234" oninput="this.value=this.value.toUpperCase()"/></div>
+      </div>
+      <div class="g3 mb16">
+        <div class="field"><label>Account Type</label>
+          <select id="ba-type">
+            <option value="CURRENT">Current Account</option>
+            <option value="SAVINGS">Savings Account</option>
+            <option value="OD">Overdraft (OD)</option>
+            <option value="CC">Cash Credit (CC)</option>
+          </select>
+        </div>
+        <div class="field"><label>Assign to Branch</label>
+          <select id="ba-branch"><option value="">Company-wide</option></select>
+        </div>
+        <div class="field"><label>Opening Balance (₹)</label><input type="number" id="ba-opening" placeholder="0.00" step="0.01"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeBankModal()">Cancel</button>
+      <button class="btn btn-primary" id="ba-save" onclick="saveBankAccount()">Save Account</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/nav.js"></script>
+<script>
+let profile, fy, companyId, branches = [];
+
+const STATES = ['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Andaman & Nicobar','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Delhi','Jammu & Kashmir','Ladakh','Lakshadweep','Puducherry'];
+
+const SERIES_TYPES = [
+  {type:'LR',       label:'LR / Consignment Note'},
+  {type:'MANIFEST', label:'Trip Manifest'},
+  {type:'INVOICE',  label:'Freight Invoice'},
+  {type:'CHALLAN',  label:'Lorry Hire Challan'},
+  {type:'GATE_PASS',label:'Gate Pass'},
+  {type:'RECEIPT',  label:'Money Receipt'},
+  {type:'CN',       label:'Credit Note'},
+  {type:'DN',       label:'Debit Note'},
+];
+
+const ROLE_LABELS = {
+  super_admin:'Super Admin', branch_manager:'Branch Manager',
+  booking_staff:'Booking Staff', accounts_staff:'Accounts Staff', driver:'Driver'
+};
+
+(async () => {
+  await requireAuth();
+  profile = await getProfile();
+  if (!profile) { signOut(); return; }
+  if (profile.role !== 'super_admin') {
+    showToast('Only Super Admin can access Settings.','error');
+    setTimeout(() => window.location.href = 'dashboard.html', 2000); return;
+  }
+  companyId = profile.company_id;
+  fy = await getActiveFY(companyId);
+  const {data:co} = await db.from('company').select('name,short_name').eq('id',companyId).single();
+  renderNav('settings', co?.short_name||co?.name, 'All Branches', profile.full_name, profile.role, fy?.fy_label);
+  document.getElementById('tb-user').textContent = profile.full_name || '';
+  if (fy) document.getElementById('tb-fy').textContent = 'FY ' + fy.fy_label;
+
+  STATES.forEach(s => {
+    ['co-state','bm-state'].forEach(id => {
+      document.getElementById(id).innerHTML += `<option value="${s}">${s}</option>`;
+    });
+  });
+
+  const t = localStorage.getItem('srpa_theme') || 'light';
+  applyTheme(t);
+  await loadCompany();
+  await loadBranches();
+  await loadFYList();
+})();
+
+function showSection(id, btn) {
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='users')     loadUsers();
+  if (id==='bank')      loadBankAccounts();
+  if (id==='numseries') populateNSBranchFilter();
+}
+
+// ── COMPANY ───────────────────────────────────────────
+async function loadCompany() {
+  const {data} = await db.from('company').select('*').eq('id',companyId).single();
+  if (!data) return;
+  const f = (id,v) => { const el=document.getElementById(id); if(el&&v!=null) el.value=v; };
+  f('co-name',data.name); f('co-short',data.short_name); f('co-address',data.address);
+  f('co-city',data.city); f('co-state',data.state); f('co-pin',data.pincode);
+  f('co-phone',data.phone); f('co-email',data.email); f('co-gstin',data.gstin);
+  f('co-pan',data.pan); f('co-cin',data.cin); f('co-bank-name',data.bank_name);
+  f('co-bank-acc',data.bank_account); f('co-bank-ifsc',data.bank_ifsc); f('co-bank-branch',data.bank_branch);
+}
+
+async function saveCompany() {
+  const name = document.getElementById('co-name').value.trim();
+  const short = document.getElementById('co-short').value.trim();
+  if (!name||!short) { showToast('Company name and short name required.','error'); return; }
+  const btn = document.getElementById('co-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  const {error} = await db.from('company').update({
+    name, short_name:short,
+    address:document.getElementById('co-address').value.trim()||null,
+    city:document.getElementById('co-city').value.trim()||null,
+    state:document.getElementById('co-state').value||null,
+    pincode:document.getElementById('co-pin').value.trim()||null,
+    phone:document.getElementById('co-phone').value.trim()||null,
+    email:document.getElementById('co-email').value.trim()||null,
+    gstin:document.getElementById('co-gstin').value.trim().toUpperCase()||null,
+    pan:document.getElementById('co-pan').value.trim().toUpperCase()||null,
+    cin:document.getElementById('co-cin').value.trim()||null,
+    bank_name:document.getElementById('co-bank-name').value.trim()||null,
+    bank_account:document.getElementById('co-bank-acc').value.trim()||null,
+    bank_ifsc:document.getElementById('co-bank-ifsc').value.trim().toUpperCase()||null,
+    bank_branch:document.getElementById('co-bank-branch').value.trim()||null,
+  }).eq('id',companyId);
+  btn.disabled=false;
+  btn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> Save Company`;
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  showToast('Company details saved!','success');
+}
+
+// ── BRANCHES ──────────────────────────────────────────
+async function loadBranches() {
+  const {data} = await db.from('branches').select('*').eq('company_id',companyId).order('created_at');
+  branches = data||[];
+  const list = document.getElementById('branch-list');
+  if (!branches.length) { list.innerHTML=`<div class="empty-state">No branches yet.<p>Add your first branch to start.</p></div>`; populateBranchDropdowns(); return; }
+  list.innerHTML = branches.map(b=>`
+    <div class="item-row">
+      <div class="item-icon icon-blue">${b.code}</div>
+      <div class="item-info"><h4>${b.name}</h4><p>${[b.city,b.state,b.phone].filter(Boolean).join(' · ')}</p></div>
+      <div class="item-actions">
+        <span class="pill ${b.is_active?'pill-green':'pill-gray'}">${b.is_active?'Active':'Inactive'}</span>
+        <button class="btn btn-secondary btn-xs" onclick="editBranch('${b.id}')">Edit</button>
+      </div>
+    </div>`).join('');
+  populateBranchDropdowns();
+}
+
+function populateBranchDropdowns() {
+  ['um-branch','ba-branch','ns-branch-filter'].forEach(id => {
+    const sel=document.getElementById(id); if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML = id==='ba-branch'?'<option value="">Company-wide</option>':'<option value="">Select branch...</option>';
+    branches.filter(b=>b.is_active).forEach(b=>{ sel.innerHTML+=`<option value="${b.id}">${b.name} (${b.code})</option>`; });
+    if (cur) sel.value=cur;
+  });
+}
+
+function openBranchModal() {
+  document.getElementById('bm-id').value='';
+  document.getElementById('bm-title').textContent='Add Branch';
+  document.getElementById('bm-save').textContent='Save Branch';
+  ['bm-name','bm-code','bm-address','bm-city','bm-pin','bm-phone','bm-gstin','bm-manager'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('bm-state').value='';
+  document.getElementById('branch-modal').style.display='flex';
+}
+
+function editBranch(id) {
+  const b=branches.find(x=>x.id===id); if(!b) return;
+  document.getElementById('bm-id').value=b.id;
+  document.getElementById('bm-title').textContent='Edit Branch';
+  document.getElementById('bm-save').textContent='Update Branch';
+  document.getElementById('bm-name').value=b.name||'';
+  document.getElementById('bm-code').value=b.code||'';
+  document.getElementById('bm-address').value=b.address||'';
+  document.getElementById('bm-city').value=b.city||'';
+  document.getElementById('bm-state').value=b.state||'';
+  document.getElementById('bm-pin').value=b.pincode||'';
+  document.getElementById('bm-phone').value=b.phone||'';
+  document.getElementById('bm-gstin').value=b.gstin||'';
+  document.getElementById('bm-manager').value=b.manager_name||'';
+  document.getElementById('branch-modal').style.display='flex';
+}
+
+function closeBranchModal() { document.getElementById('branch-modal').style.display='none'; }
+
+async function saveBranch() {
+  const id=document.getElementById('bm-id').value;
+  const name=document.getElementById('bm-name').value.trim();
+  const code=document.getElementById('bm-code').value.trim().toUpperCase();
+  if (!name||!code) { showToast('Branch name and code required.','error'); return; }
+  const btn=document.getElementById('bm-save');
+  btn.disabled=true; btn.textContent='Saving...';
+  const payload={company_id:companyId,name,code,
+    address:document.getElementById('bm-address').value.trim()||null,
+    city:document.getElementById('bm-city').value.trim()||null,
+    state:document.getElementById('bm-state').value||null,
+    pincode:document.getElementById('bm-pin').value.trim()||null,
+    phone:document.getElementById('bm-phone').value.trim()||null,
+    gstin:document.getElementById('bm-gstin').value.trim().toUpperCase()||null,
+    manager_name:document.getElementById('bm-manager').value.trim()||null,
+  };
+  let error;
+  if (id) ({error}=await db.from('branches').update(payload).eq('id',id));
+  else ({error}=await db.from('branches').insert(payload));
+  btn.disabled=false; btn.textContent=id?'Update Branch':'Save Branch';
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  showToast(id?'Branch updated!':'Branch created!','success');
+  closeBranchModal(); await loadBranches();
+}
+
+// ── USERS ─────────────────────────────────────────────
+async function loadUsers() {
+  const {data} = await db.from('user_profiles').select('*,branches(name,code)').eq('company_id',companyId).order('created_at');
+  const list=document.getElementById('user-list');
+  if (!data||!data.length) { list.innerHTML=`<div class="empty-state">No users yet.</div>`; return; }
+  list.innerHTML=data.map(u=>`
+    <div class="item-row">
+      <div class="item-icon icon-orange">${(u.full_name||'U')[0].toUpperCase()}</div>
+      <div class="item-info">
+        <h4>${u.full_name||'—'} ${u.id===profile.id?'<span class="pill pill-orange" style="font-size:10px;padding:1px 7px">You</span>':''}</h4>
+        <p>${ROLE_LABELS[u.role]||u.role} · ${u.branches?u.branches.name:'All Branches'} ${u.phone?'· '+u.phone:''}</p>
+      </div>
+      <div class="item-actions">
+        <span class="pill ${u.is_active?'pill-green':'pill-gray'}">${u.is_active?'Active':'Inactive'}</span>
+        ${u.id!==profile.id?`<button class="btn btn-secondary btn-xs" onclick="toggleUser('${u.id}',${u.is_active})">${u.is_active?'Deactivate':'Activate'}</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function openUserModal() {
+  ['um-name','um-phone','um-email','um-password'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('um-role').value='';
+  document.getElementById('um-branch').value='';
+  document.getElementById('um-sa-note').style.display='none';
+  document.getElementById('um-branch-field').style.opacity='1';
+  document.getElementById('user-modal').style.display='flex';
+}
+function closeUserModal() { document.getElementById('user-modal').style.display='none'; }
+
+function toggleBranchField() {
+  const isSA = document.getElementById('um-role').value==='super_admin';
+  document.getElementById('um-sa-note').style.display=isSA?'block':'none';
+  document.getElementById('um-branch-field').style.opacity=isSA?'0.4':'1';
+  if (isSA) document.getElementById('um-branch').value='';
+}
+
+async function saveUser() {
+  const name=document.getElementById('um-name').value.trim();
+  const email=document.getElementById('um-email').value.trim();
+  const pwd=document.getElementById('um-password').value;
+  const role=document.getElementById('um-role').value;
+  const branchId=document.getElementById('um-branch').value;
+  if (!name) { showToast('Enter full name.','error'); return; }
+  if (!email) { showToast('Enter email.','error'); return; }
+  if (!pwd||pwd.length<8) { showToast('Password must be at least 8 characters.','error'); return; }
+  if (!role) { showToast('Select a role.','error'); return; }
+  if (role!=='super_admin'&&!branchId) { showToast('Select a branch for this user.','error'); return; }
+
+  const btn=document.getElementById('um-save');
+  btn.disabled=true; btn.textContent='Creating...';
+
+  const {data:s,error:se} = await db.auth.signUp({email, password:pwd});
+  if (se) { showToast('Auth error: '+se.message,'error'); btn.disabled=false; btn.textContent='Create User'; return; }
+  const userId=s?.user?.id;
+  if (!userId) { showToast('Could not create user. Email may already exist.','error'); btn.disabled=false; btn.textContent='Create User'; return; }
+
+  const {error:pe} = await db.from('user_profiles').insert({
+    id:userId, company_id:companyId,
+    branch_id:role==='super_admin'?null:branchId,
+    full_name:name,
+    phone:document.getElementById('um-phone').value.trim()||null,
+    role, is_active:true,
+  });
+
+  btn.disabled=false; btn.textContent='Create User';
+  if (pe) { showToast('Profile error: '+pe.message,'error'); return; }
+  showToast('User created! They will receive a confirmation email.','success');
+  closeUserModal(); loadUsers();
+}
+
+async function toggleUser(id,current) {
+  const {error}=await db.from('user_profiles').update({is_active:!current}).eq('id',id);
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  showToast(current?'User deactivated.':'User activated.','success');
+  loadUsers();
+}
+
+// ── NUMBER SERIES ─────────────────────────────────────
+function populateNSBranchFilter() { populateBranchDropdowns(); }
+
+async function loadNumberSeries() {
+  const branchId=document.getElementById('ns-branch-filter').value;
+  const content=document.getElementById('ns-content');
+  if (!branchId||!fy) { content.innerHTML='<p style="color:var(--text3);font-size:13px">Select a branch to configure number series.</p>'; return; }
+  const branch=branches.find(b=>b.id===branchId);
+  const {data:existing}=await db.from('number_series').select('*').eq('company_id',companyId).eq('fy_id',fy.id).eq('branch_id',branchId);
+  const map={};
+  (existing||[]).forEach(s=>{map[s.series_type]=s;});
+
+  let html=`
+    <div class="form-card-title">Number series — ${branch?.name} · FY ${fy.fy_label}</div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:16px">Format: <strong style="color:var(--accent-text)">${branch?.code||'BLR'}/${fy.fy_code}/0001</strong></p>
+    <div class="table-scroll"><table class="ns-table">
+      <thead><tr><th>Document</th><th>Prefix</th><th>Current No.</th><th>Digits</th><th>Next Preview</th></tr></thead>
+      <tbody>`;
+
+  SERIES_TYPES.forEach(st=>{
+    const ex=map[st.type];
+    const prefix=ex?.prefix||(branch?.code||'BLR');
+    const current=ex?.current_number||0;
+    const pad=ex?.pad_length||4;
+    const preview=`${prefix}/${fy.fy_code}/${String(current+1).padStart(pad,'0')}`;
+    html+=`<tr data-type="${st.type}" data-id="${ex?.id||''}">
+      <td style="font-weight:500">${st.label}</td>
+      <td><input type="text" class="ns-prefix" value="${prefix}" maxlength="6" oninput="this.value=this.value.toUpperCase();updatePreview(this)"/></td>
+      <td><input type="number" class="ns-current" value="${current}" min="0" oninput="updatePreview(this)"/></td>
+      <td><select class="ns-pad" onchange="updatePreview(this)">
+        ${[3,4,5,6].map(n=>`<option value="${n}" ${pad==n?'selected':''}>${n}</option>`).join('')}
+      </select></td>
+      <td class="ns-prev"><span class="preview-no">${preview}</span></td>
+    </tr>`;
+  });
+
+  html+=`</tbody></table></div>
+    <div class="save-bar" style="margin-top:16px">
+      <span class="save-bar-msg">Existing LRs/invoices are not affected. Only new documents use the new series.</span>
+      <button class="btn btn-primary" onclick="saveNumberSeries('${branchId}')">
+        <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+        Save Number Series
+      </button>
+    </div>`;
+  content.innerHTML=html;
+}
+
+function updatePreview(el) {
+  const row=el.closest('tr');
+  const prefix=row.querySelector('.ns-prefix').value||'BLR';
+  const current=parseInt(row.querySelector('.ns-current').value)||0;
+  const pad=parseInt(row.querySelector('.ns-pad').value)||4;
+  row.querySelector('.ns-prev').innerHTML=`<span class="preview-no">${prefix}/${fy?.fy_code||'2425'}/${String(current+1).padStart(pad,'0')}</span>`;
+}
+
+async function saveNumberSeries(branchId) {
+  const rows=document.querySelectorAll('#ns-content tbody tr');
+  let ok=0,fail=0;
+  for (const row of rows) {
+    const type=row.dataset.type, exId=row.dataset.id;
+    const prefix=row.querySelector('.ns-prefix').value.trim().toUpperCase();
+    const current=parseInt(row.querySelector('.ns-current').value)||0;
+    const pad=parseInt(row.querySelector('.ns-pad').value)||4;
+    if (!prefix) continue;
+    const payload={company_id:companyId,fy_id:fy.id,branch_id:branchId,series_type:type,prefix,current_number:current,pad_length:pad,separator:'/'};
+    let error;
+    if (exId) ({error}=await db.from('number_series').update(payload).eq('id',exId));
+    else ({error}=await db.from('number_series').insert(payload));
+    if (error) fail++; else ok++;
+  }
+  if (fail) showToast(`${ok} saved, ${fail} failed.`,'warning');
+  else showToast(`All ${ok} number series saved!`,'success');
+  loadNumberSeries();
+}
+
+// ── FINANCIAL YEAR ────────────────────────────────────
+async function loadFYList() {
+  const {data}=await db.from('financial_years').select('*').eq('company_id',companyId).order('start_date',{ascending:false});
+  const list=document.getElementById('fy-list');
+  if (!data||!data.length) { list.innerHTML=`<div class="empty-state">No financial years.</div>`; return; }
+  list.innerHTML=data.map(f=>`
+    <div class="item-row">
+      <div class="item-icon icon-green" style="font-size:12px">${f.fy_code}</div>
+      <div class="item-info"><h4>${f.fy_label}</h4><p>${fmtDate(f.start_date)} — ${fmtDate(f.end_date)}</p></div>
+      <div class="item-actions">
+        ${f.is_active?'<span class="pill pill-green">Active</span>':''}
+        ${f.is_locked?'<span class="pill pill-gray">Locked</span>':''}
+        ${!f.is_active?`<button class="btn btn-secondary btn-xs" onclick="setActiveFY('${f.id}')">Set Active</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function openFYModal() {
+  ['fy-label','fy-code','fy-start','fy-end'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('fy-active').checked=false;
+  document.getElementById('fy-modal').style.display='flex';
+}
+function closeFYModal() { document.getElementById('fy-modal').style.display='none'; }
+
+async function saveFY() {
+  const label=document.getElementById('fy-label').value.trim();
+  const code=document.getElementById('fy-code').value.trim();
+  const start=document.getElementById('fy-start').value;
+  const end=document.getElementById('fy-end').value;
+  const active=document.getElementById('fy-active').checked;
+  if (!label||!code||!start||!end) { showToast('All fields required.','error'); return; }
+  if (active) await db.from('financial_years').update({is_active:false}).eq('company_id',companyId);
+  const {error}=await db.from('financial_years').insert({company_id:companyId,fy_label:label,fy_code:code,start_date:start,end_date:end,is_active:active});
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  showToast('Financial year added!','success');
+  closeFYModal(); loadFYList();
+  if (active) { fy=await getActiveFY(companyId); if(fy) document.getElementById('tb-fy').textContent='FY '+fy.fy_label; }
+}
+
+async function setActiveFY(id) {
+  await db.from('financial_years').update({is_active:false}).eq('company_id',companyId);
+  await db.from('financial_years').update({is_active:true}).eq('id',id);
+  showToast('Active year updated!','success');
+  loadFYList();
+  fy=await getActiveFY(companyId);
+  if(fy) document.getElementById('tb-fy').textContent='FY '+fy.fy_label;
+}
+
+// ── BANK ACCOUNTS ─────────────────────────────────────
+async function loadBankAccounts() {
+  const {data}=await db.from('bank_accounts').select('*,branches(name)').eq('company_id',companyId).order('created_at');
+  const list=document.getElementById('bank-list');
+  if (!data||!data.length) { list.innerHTML=`<div class="empty-state">No bank accounts yet.</div>`; return; }
+  list.innerHTML=data.map(b=>`
+    <div class="item-row">
+      <div class="item-icon icon-blue" style="font-size:11px">${b.account_type}</div>
+      <div class="item-info">
+        <h4>${b.account_name}</h4>
+        <p>${b.bank_name}${b.account_no?' · A/c: '+b.account_no:''}${b.branches?' · '+b.branches.name:' · Company-wide'}</p>
+      </div>
+      <div class="item-actions">
+        <span class="pill ${b.is_active?'pill-green':'pill-gray'}">${b.is_active?'Active':'Inactive'}</span>
+        <button class="btn btn-secondary btn-xs" onclick="editBankAccount('${b.id}')">Edit</button>
+      </div>
+    </div>`).join('');
+}
+
+function openBankModal() {
+  document.getElementById('ba-id').value='';
+  document.getElementById('ba-title').textContent='Add Bank Account';
+  ['ba-name','ba-bank','ba-acc','ba-ifsc','ba-opening'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('ba-type').value='CURRENT';
+  document.getElementById('ba-branch').value='';
+  document.getElementById('bank-modal').style.display='flex';
+}
+
+async function editBankAccount(id) {
+  const {data:b}=await db.from('bank_accounts').select('*').eq('id',id).single();
+  if (!b) return;
+  document.getElementById('ba-id').value=b.id;
+  document.getElementById('ba-title').textContent='Edit Bank Account';
+  document.getElementById('ba-name').value=b.account_name||'';
+  document.getElementById('ba-bank').value=b.bank_name||'';
+  document.getElementById('ba-acc').value=b.account_no||'';
+  document.getElementById('ba-ifsc').value=b.ifsc||'';
+  document.getElementById('ba-type').value=b.account_type||'CURRENT';
+  document.getElementById('ba-branch').value=b.branch_id||'';
+  document.getElementById('ba-opening').value=b.opening_balance||'';
+  document.getElementById('bank-modal').style.display='flex';
+}
+function closeBankModal() { document.getElementById('bank-modal').style.display='none'; }
+
+async function saveBankAccount() {
+  const id=document.getElementById('ba-id').value;
+  const name=document.getElementById('ba-name').value.trim();
+  const bank=document.getElementById('ba-bank').value.trim();
+  if (!name||!bank) { showToast('Account label and bank name required.','error'); return; }
+  const btn=document.getElementById('ba-save');
+  btn.disabled=true; btn.textContent='Saving...';
+  const payload={company_id:companyId,account_name:name,bank_name:bank,
+    account_no:document.getElementById('ba-acc').value.trim()||null,
+    ifsc:document.getElementById('ba-ifsc').value.trim().toUpperCase()||null,
+    account_type:document.getElementById('ba-type').value,
+    branch_id:document.getElementById('ba-branch').value||null,
+    opening_balance:parseFloat(document.getElementById('ba-opening').value)||0,
+  };
+  let error;
+  if (id) ({error}=await db.from('bank_accounts').update(payload).eq('id',id));
+  else ({error}=await db.from('bank_accounts').insert(payload));
+  btn.disabled=false; btn.textContent='Save Account';
+  if (error) { showToast('Error: '+error.message,'error'); return; }
+  showToast('Bank account saved!','success');
+  closeBankModal(); loadBankAccounts();
+}
+
+// ── THEME ─────────────────────────────────────────────
+function setTheme(t) {
+  localStorage.setItem('srpa_theme',t);
+  applyTheme(t);
+  showToast((t==='light'?'Light':'Dark')+' theme applied!','success');
+}
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('theme-light-card').classList.toggle('selected',t==='light');
+  document.getElementById('theme-dark-card').classList.toggle('selected',t==='dark');
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg,type='success') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+type;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='',3000);
+}
+</script>
+</body>
+</html>
